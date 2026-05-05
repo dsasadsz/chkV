@@ -23,8 +23,9 @@ SECRET_KEY = 'django-insecure-%%2-n=1fid!4hx)t*yb8qao6tl58mfy&-b+%05hg57(%@*@q-&
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "amantay.pythonanywhere.com",
     "Amantay.pythonanywhere.com",
-]
+] 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
