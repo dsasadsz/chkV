@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-labelledby="title desc">
+  <title id="title">Travel X destination placeholder</title>
+  <desc id="desc">Stylized space destination placeholder with a planet, stars, and orbital lines.</desc>
+  <defs>
+    <radialGradient id="space" cx="50%" cy="18%" r="82%">
+      <stop offset="0%" stop-color="#21395f"/>
+      <stop offset="58%" stop-color="#081225"/>
+      <stop offset="100%" stop-color="#02050b"/>
+    </radialGradient>
+    <radialGradient id="planet" cx="33%" cy="28%" r="72%">
+      <stop offset="0%" stop-color="#f8fbff"/>
+      <stop offset="24%" stop-color="#6ff3e4"/>
+      <stop offset="62%" stop-color="#2a6bea"/>
+      <stop offset="100%" stop-color="#12234f"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f2ff" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#00f2ff" stop-opacity="0.75"/>
+      <stop offset="100%" stop-color="#ff2a6d" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="960" height="640" fill="url(#space)"/>
+  <g fill="#ffffff" opacity="0.86">
+    <circle cx="106" cy="88" r="2"/>
+    <circle cx="206" cy="166" r="1.6"/>
+    <circle cx="314" cy="70" r="1.8"/>
+    <circle cx="508" cy="122" r="2.4"/>
+    <circle cx="722" cy="92" r="1.7"/>
+    <circle cx="828" cy="182" r="2"/>
+    <circle cx="112" cy="494" r="1.8"/>
+    <circle cx="754" cy="510" r="2.1"/>
+    <circle cx="886" cy="420" r="1.5"/>
+  </g>
+  <ellipse cx="480" cy="336" rx="350" ry="92" fill="none" stroke="url(#ring)" stroke-width="8" transform="rotate(-14 480 336)"/>
+  <circle cx="480" cy="320" r="150" fill="url(#planet)" filter="url(#glow)"/>
+  <path d="M360 260c58 26 154 34 255 10 10 22 15 45 15 70 0 16-2 32-7 47-96 28-201 17-288-28-4-13-6-26-6-40 0-21 4-41 11-59Z" fill="#081225" opacity="0.23"/>
+  <path d="M329 336c86 42 193 52 302 22" fill="none" stroke="#ffffff" stroke-opacity="0.2" stroke-width="10" stroke-linecap="round"/>
+  <text x="480" y="548" fill="#d9fbff" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">Travel X</text>
+</svg>

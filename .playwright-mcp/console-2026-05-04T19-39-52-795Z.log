@@ -1,0 +1,3 @@
+[      83ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8000/media/destinations/mars-valles-marineris.jpg:0
+[      83ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8000/media/destinations/moon-alpha.jpg:0
+[      99ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:8000/media/destinations/alpha-centauri-station.jpg:0

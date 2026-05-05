@@ -1,0 +1,74 @@
+{% extends "public_base.html" %}
+
+{% block title %}Travel X | Космический туризм{% endblock %}
+
+{% block extra_head %}
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+{% endblock %}
+
+{% block content %}
+<header class="hero">
+    <div id="canvas-container" aria-label="Интерактивная 3D-сцена Солнечной системы"></div>
+    <div class="hero-content">
+        <h1 class="typing-effect">Покоряйте Марс уже сегодня</h1>
+        <p class="fade-in">Travel X возвращает старый космический лендинг в новой Django-версии проекта с авторизацией, базой данных и профилями пользователей.</p>
+        <a href="{% url 'destinations' %}" class="cta-button pulse-effect">Выбрать маршрут →</a>
+    </div>
+    <div class="hero-overlay"></div>
+</header>
+
+<section class="features">
+    {% for feature in features %}
+        <div class="feature-card" data-tilt>
+            <h3>
+                {% if feature.icon == "rocket" %}🚀{% elif feature.icon == "sparkles" %}🌌{% else %}🪐{% endif %}
+                {{ feature.title }}
+            </h3>
+            <p>{{ feature.description }}</p>
+        </div>
+    {% endfor %}
+</section>
+
+<section class="popular-section">
+    <div class="popular-heading">
+        <h2>Популярные направления</h2>
+        <p>Топ-3 маршрута по оценкам путешественников Travel X.</p>
+    </div>
+
+    <div class="popular-grid">
+        {% for destination in popular_destinations %}
+            <article class="popular-card">
+                <img src="{{ destination.image.url }}" alt="{{ destination.title }}">
+                <div class="popular-card-content">
+                    <span>{{ destination.system.name }}</span>
+                    <h3>{{ destination.title }}</h3>
+                    <p>{{ destination.description|truncatechars:120 }}</p>
+                    <div class="rating-stars" aria-label="Средний рейтинг {{ destination.avg_rating|floatformat:1 }} из 5">
+                        {{ destination.rating_stars }}
+                    </div>
+                    <strong>{{ destination.avg_rating|floatformat:1 }}/5</strong>
+                </div>
+            </article>
+        {% empty %}
+            <article class="popular-empty">
+                <h3>Отзывы скоро появятся</h3>
+                <p>После первых путешествий здесь появятся самые любимые направления.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="status-strip">
+    <div class="status-mini">
+        <h3>Пользователи проекта</h3>
+        <p>Все данные регистрации теперь сохраняются в SQLite через Django и доступны в личных кабинетах и админке.</p>
+        <strong>{{ travellers_count }}</strong>
+    </div>
+    <div class="status-mini">
+        <h3>Загруженные аватары</h3>
+        <p>Фотографии профиля хранятся по папкам пользователей и отображаются в правом верхнем углу сайта после входа.</p>
+        <strong>{{ photos_count }}</strong>
+    </div>
+</section>
+{% endblock %}

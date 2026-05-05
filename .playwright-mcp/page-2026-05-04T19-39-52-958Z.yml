@@ -1,0 +1,86 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e3]:
+    - link "Travel X" [ref=e4] [cursor=pointer]:
+      - /url: /
+    - generic [ref=e5]:
+      - link "Главная" [ref=e6] [cursor=pointer]:
+        - /url: /
+      - link "Направления" [ref=e7] [cursor=pointer]:
+        - /url: /destinations/
+      - button "Переключить тему" [ref=e8] [cursor=pointer]: ☀
+      - generic [ref=e9]:
+        - link "Войти" [ref=e10] [cursor=pointer]:
+          - /url: /login/
+        - link "Регистрация" [ref=e11] [cursor=pointer]:
+          - /url: /register/
+  - generic [ref=e12]:
+    - heading "Космические направления" [level=1] [ref=e13]
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]:
+          - generic [ref=e17]: Звездная система
+          - combobox "Звездная система" [ref=e18]:
+            - option "Все системы" [selected]
+            - option "Внутренние планеты"
+            - option "Дальний космос"
+        - generic [ref=e19]:
+          - generic [ref=e20]: Тип объекта
+          - combobox "Тип объекта" [ref=e21]:
+            - option "Все типы" [selected]
+            - option "Планета"
+            - option "Спутник"
+            - option "Орбитальная станция"
+            - option "Астероид"
+        - generic [ref=e22]:
+          - generic [ref=e23]: Активность
+          - combobox "Активность" [ref=e24]:
+            - option "Все активности" [selected]
+            - option "Исследования"
+            - option "Релакс"
+            - option "Экстрим"
+      - generic [ref=e25]:
+        - button "Применить фильтры" [ref=e26] [cursor=pointer]
+        - link "Сбросить" [ref=e27] [cursor=pointer]:
+          - /url: /destinations/
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - img "Лунная база Альфа" [ref=e31]
+          - generic [ref=e32]: от $50000,00
+        - generic [ref=e33]:
+          - heading "Лунная база Альфа" [level=2] [ref=e34]
+          - paragraph [ref=e35]: Внутренние планеты · Спутник
+          - paragraph [ref=e36]: "Мягкий старт для первого космического путешествия: обзор Земли, прогулка по куполу базы и короткая исследовательская программа."
+          - generic "Типы активности" [ref=e37]:
+            - generic [ref=e38]: Исследования
+            - generic [ref=e39]: Релакс
+          - button "Подробнее" [ref=e40] [cursor=pointer]
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - img "Долина Маринер на Марсе" [ref=e43]
+          - generic [ref=e44]: от $120000,00
+        - generic [ref=e45]:
+          - heading "Долина Маринер на Марсе" [level=2] [ref=e46]
+          - paragraph [ref=e47]: Внутренние планеты · Планета
+          - paragraph [ref=e48]: Экспедиционный маршрут по марсианским каньонам с ровером, геологическим модулем и видом на красные равнины.
+          - generic "Типы активности" [ref=e49]:
+            - generic [ref=e50]: Исследования
+            - generic [ref=e51]: Экстрим
+          - button "Подробнее" [ref=e52] [cursor=pointer]
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - img "Орбитальная станция Альфа Центавра" [ref=e55]
+          - generic [ref=e56]: от $1500000,00
+        - generic [ref=e57]:
+          - heading "Орбитальная станция Альфа Центавра" [level=2] [ref=e58]
+          - paragraph [ref=e59]: Дальний космос · Орбитальная станция
+          - paragraph [ref=e60]: Дальний межзвездный тур для опытных путешественников с наблюдением двойной звездной системы и длительным пребыванием на станции.
+          - generic "Типы активности" [ref=e61]:
+            - generic [ref=e62]: Исследования
+            - generic [ref=e63]: Релакс
+          - button "Подробнее" [ref=e64] [cursor=pointer]
+  - text:  
+  - link "Открыть AI-ассистента" [ref=e65] [cursor=pointer]:
+    - /url: /assistant/
+    - generic [ref=e66]: AI
+    - generic [ref=e67]: Ассистент

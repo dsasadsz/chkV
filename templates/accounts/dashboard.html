@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Кабинет | Travel X{% endblock %}
+
+{% block content %}
+<section class="profile-layout">
+    <article class="glass-panel profile-summary">
+        <div class="avatar-showcase">
+            <img
+                src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}{% static 'images/default-avatar.svg' %}{% endif %}"
+                alt="Фото профиля {{ user.username }}"
+                class="avatar-image"
+                data-preview-target="dashboard"
+            >
+            <div>
+                <p class="eyebrow">Личный кабинет</p>
+                <h1>{{ user.username }}</h1>
+                <p class="lead">{{ user.email|default:"Email не указан" }}</p>
+                {% if profile.profile_image %}
+                    <p class="file-note">Сохраненный путь: {{ profile.profile_image.name }}</p>
+                {% else %}
+                    <p class="file-note">Сейчас используется фото по умолчанию.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="meta-grid">
+            <div class="meta-card">
+                <span>Возраст</span>
+                <strong>{{ profile.age }}</strong>
+            </div>
+            <div class="meta-card">
+                <span>Дата регистрации</span>
+                <strong>{{ user.date_joined|date:"d.m.Y" }}</strong>
+            </div>
+            <div class="meta-card">
+                <span>Последнее обновление</span>
+                <strong>{{ profile.updated_at|date:"d.m.Y H:i" }}</strong>
+            </div>
+        </div>
+    </article>
+
+    <aside class="glass-panel form-card">
+        <h2>Обновить фото профиля</h2>
+        <p class="muted">
+            Система принимает только изображения, сохраняет их в отдельную папку пользователя
+            и обновляет путь к файлу в базе данных.
+        </p>
+
+        <form method="post" action="{% url 'update_profile_photo' %}" enctype="multipart/form-data" class="styled-form">
+            {% csrf_token %}
+
+            <div class="field-block">
+                <label for="{{ photo_form.profile_image.id_for_label }}">{{ photo_form.profile_image.label }}</label>
+                {{ photo_form.profile_image }}
+                <p class="field-help">{{ photo_form.profile_image.help_text }}</p>
+                {% for error in photo_form.profile_image.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+                <p class="file-note" data-file-name="dashboard">Файл пока не выбран.</p>
+            </div>
+
+            <button type="submit" class="primary-button wide-button">Загрузить фотографию</button>
+        </form>
+    </aside>
+</section>
+
+<section class="achievements-section glass-panel">
+    <div class="section-heading">
+        <p class="eyebrow">Travel X Rewards</p>
+        <h2>Мои достижения</h2>
+    </div>
+
+    <div class="achievement-grid">
+        {% for achievement in profile.achievements.all %}
+            <article class="achievement-badge" tabindex="0" aria-label="{{ achievement.title }}: {{ achievement.description }}">
+                <span class="achievement-icon">
+                    {% if achievement.icon %}
+                        <img src="{{ achievement.icon.url }}" alt="">
+                    {% else %}
+                        <span>{{ achievement.title|first }}</span>
+                    {% endif %}
+                </span>
+                <strong>{{ achievement.title }}</strong>
+                <span class="achievement-tooltip">{{ achievement.description }}</span>
+            </article>
+        {% empty %}
+            <div class="empty-achievements">
+                <p class="eyebrow">Пока пусто</p>
+                <h3>Первый бейдж уже близко</h3>
+                <p class="muted">Купите билет, и Travel X автоматически добавит достижение в профиль.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="dashboard-tabs">
+    <div class="section-heading">
+        <p class="eyebrow">Post-purchase center</p>
+        <h2>Подготовка к полету</h2>
+    </div>
+
+    <nav class="tab-list" aria-label="Разделы личного кабинета">
+        <a href="#my-flights" class="tab-link">Мои полеты</a>
+        <a href="#documents-medicine" class="tab-link">Документы и Медицина</a>
+        <a href="#notifications" class="tab-link">Уведомления</a>
+    </nav>
+
+    <div id="my-flights" class="tab-panel">
+        <div class="meta-grid">
+            <div class="meta-card">
+                <span>Прогресс подготовки</span>
+                <strong>{{ preparation_progress_percent }}%</strong>
+            </div>
+            <div class="meta-card">
+                <span>Непрочитанные уведомления</span>
+                <strong>{{ unread_notifications|length }}</strong>
+            </div>
+        </div>
+
+        <div class="boarding-grid">
+            {% for ticket in ticket_history %}
+                <article class="boarding-pass glass-panel">
+                    <div class="boarding-main">
+                        <div>
+                            <p class="ticket-label">Пассажир</p>
+                            <h3>{{ ticket.user.get_full_name|default:ticket.user.username }}</h3>
+                        </div>
+                        <div>
+                            <p class="ticket-label">Направление</p>
+                            <strong>{{ ticket.package.destination.title }}</strong>
+                        </div>
+                        <div class="ticket-route">
+                            <span>TRX</span>
+                            <i></i>
+                            <span>{{ ticket.package.destination.get_object_type_display|upper }}</span>
+                        </div>
+                        <div class="ticket-details">
+                            <div>
+                                <p class="ticket-label">Вылет</p>
+                                <strong>{{ ticket.flight_schedule.departure_at|date:"d.m.Y H:i" }}</strong>
+                            </div>
+                            <div>
+                                <p class="ticket-label">Тариф</p>
+                                <strong>{{ ticket.package.get_class_type_display }}</strong>
+                            </div>
+                            <div>
+                                <p class="ticket-label">Статус</p>
+                                <strong>{{ ticket.get_status_display }}</strong>
+                            </div>
+                        </div>
+                        <p class="ticket-number">№ {{ ticket.ticket_number }}</p>
+
+                        <div class="ticket-actions">
+                            {% if ticket.status == "paid" %}
+                                <a href="{% url 'download_ticket_pdf' ticket.id %}" class="primary-button">Скачать PDF</a>
+                                <a href="{% url 'destinations' %}#destination-{{ ticket.package.destination_id }}" class="secondary-button">
+                                    Оставить комментарий о рейсе
+                                </a>
+                            {% endif %}
+                            {% if ticket.status != "cancelled" %}
+                                <form method="post" action="{% url 'cancel_ticket' ticket.id %}" class="inline-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="cancellation_reason" value="Отмена из личного кабинета">
+                                    <button type="submit" class="secondary-button">Отменить бронь</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="boarding-qr">
+                        {% if ticket.qr_code %}
+                            <img src="{{ ticket.qr_code.url }}" alt="QR-код билета {{ ticket.ticket_number }}">
+                        {% endif %}
+                        <span>Посадочный талон</span>
+                    </div>
+                </article>
+            {% empty %}
+                <article class="glass-panel empty-ticket-panel">
+                    <p class="eyebrow">Билетов пока нет</p>
+                    <h3>Выберите направление и тариф</h3>
+                    <p class="muted">После покупки здесь появится посадочный талон с QR-кодом.</p>
+                    <a href="{% url 'destinations' %}" class="primary-button">Перейти к направлениям</a>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="documents-medicine" class="tab-panel">
+        <div class="feature-grid compact-grid">
+            <article class="info-card glass-panel">
+                <p class="eyebrow">Паспорт</p>
+                {% if passenger_document %}
+                    <h3>{{ passenger_document.passport_number }}</h3>
+                    <p>Гражданство: {{ passenger_document.citizenship }}</p>
+                {% else %}
+                    <h3>Документы не заполнены</h3>
+                    <p class="muted">Паспортные данные появятся здесь после заполнения профиля пассажира.</p>
+                {% endif %}
+            </article>
+
+            <article class="info-card glass-panel">
+                <p class="eyebrow">Медицина</p>
+                {% if medical_questionnaire %}
+                    <h3>{{ medical_questionnaire.get_clearance_status_display }}</h3>
+                    <p>Рост: {{ medical_questionnaire.height_cm }} см · Вес: {{ medical_questionnaire.weight_kg }} кг</p>
+                    <p>Хронические заболевания: {{ medical_questionnaire.has_chronic_diseases|yesno:"есть,нет" }}</p>
+                {% else %}
+                    <h3>Анкета не заполнена</h3>
+                    <p class="muted">После медицинского опросника здесь появится статус допуска.</p>
+                {% endif %}
+            </article>
+        </div>
+    </div>
+
+    <div id="notifications" class="tab-panel">
+        <div class="notification-list">
+            {% for notification in unread_notifications %}
+                <article class="info-card glass-panel">
+                    <p class="eyebrow">{{ notification.created_at|date:"d.m.Y H:i" }}</p>
+                    <h3>{{ notification.text }}</h3>
+                </article>
+            {% empty %}
+                <article class="info-card glass-panel">
+                    <p class="eyebrow">Все спокойно</p>
+                    <h3>Новых уведомлений нет</h3>
+                    <p class="muted">Важные сообщения о подготовке, медицине и возвратах появятся здесь.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="feature-grid compact-grid">
+    <article class="info-card glass-panel">
+        <p class="eyebrow">Безопасность</p>
+        <h3>Только ваш аватар</h3>
+        <p>
+            В кабинете показывается только фото текущего авторизованного пользователя.
+            Другие аккаунты видят только свои данные и свои изображения.
+        </p>
+    </article>
+
+    <article class="info-card glass-panel">
+        <p class="eyebrow">Хранение</p>
+        <h3>Структура по пользователям</h3>
+        <p>
+            Файлы раскладываются по папкам пользователей, например `media/profile_photos/user_5/...`,
+            а в базе данных хранится путь к актуальному файлу.
+        </p>
+    </article>
+</section>
+{% endblock %}

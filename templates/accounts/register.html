@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Регистрация | Travel X{% endblock %}
+
+{% block content %}
+<section class="auth-layout">
+    <div class="glass-panel auth-side">
+        <p class="eyebrow">Регистрация</p>
+        <h1>Создайте аккаунт космического туриста</h1>
+        <p class="lead">
+            После регистрации вы сразу попадете в личный кабинет, где сможете обновить фото профиля
+            и просматривать данные своего аккаунта.
+        </p>
+
+        <div class="avatar-showcase">
+            <img
+                src="{% static 'images/default-avatar.svg' %}"
+                alt="Предпросмотр фото профиля"
+                class="avatar-image"
+                data-preview-target="register"
+            >
+            <div>
+                <strong>Фото по умолчанию</strong>
+                <p class="muted">
+                    Если файл не выбран, система покажет стандартный аватар. Поддерживаются только изображения.
+                </p>
+                <p class="file-note" data-file-name="register">Файл пока не выбран.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel form-card">
+        <h2>Форма регистрации</h2>
+        <form method="post" enctype="multipart/form-data" class="styled-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="field-errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="field-block">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="field-block">
+                <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {{ form.email }}
+                {% for error in form.email.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="field-block">
+                <label for="{{ form.age.id_for_label }}">{{ form.age.label }}</label>
+                {{ form.age }}
+                {% for error in form.age.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="field-block">
+                <label for="{{ form.profile_image.id_for_label }}">{{ form.profile_image.label }}</label>
+                {{ form.profile_image }}
+                <p class="field-help">Поддерживаются только JPG, PNG, WEBP и GIF.</p>
+                {% for error in form.profile_image.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="field-block">
+                <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+                {{ form.password1 }}
+                <p class="field-help">{{ form.password1.help_text }}</p>
+                {% for error in form.password1.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="field-block">
+                <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                {{ form.password2 }}
+                <p class="field-help">{{ form.password2.help_text }}</p>
+                {% for error in form.password2.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <button type="submit" class="primary-button wide-button">Зарегистрироваться</button>
+        </form>
+
+        <p class="auth-footer">
+            Уже есть аккаунт?
+            <a href="{% url 'login' %}">Перейти ко входу</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

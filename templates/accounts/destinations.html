@@ -1,0 +1,263 @@
+{% extends "public_base.html" %}
+{% load static %}
+
+{% block title %}Направления | Travel X{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="section-title">Космические направления</h1>
+
+    {# GET-форма сохраняет фильтры прямо в URL и не требует JavaScript. #}
+    <form class="filters-form" method="GET" action="{% url 'destinations' %}">
+        <div class="filters-grid">
+            <label>
+                <span>Звездная система</span>
+                <select name="system" class="travelx-select" data-custom-select>
+                    <option value="">Все системы</option>
+                    {% for system in systems %}
+                        <option value="{{ system.id }}"{% if selected_filters.system == system.id|stringformat:"s" %} selected{% endif %}>
+                            {{ system.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                <span>Тип объекта</span>
+                <select name="object_type" class="travelx-select" data-custom-select>
+                    <option value="">Все типы</option>
+                    {% for value, label in object_types %}
+                        <option value="{{ value }}"{% if selected_filters.object_type == value %} selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label>
+                <span>Активность</span>
+                <select name="tag" class="travelx-select" data-custom-select>
+                    <option value="">Все активности</option>
+                    {% for tag in tags %}
+                        <option value="{{ tag.id }}"{% if selected_filters.tag == tag.id|stringformat:"s" %} selected{% endif %}>
+                            {{ tag.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div class="filters-actions">
+            <button type="submit" class="book-btn">Применить фильтры</button>
+            <a class="book-btn reset-filter-btn" href="{% url 'destinations' %}">Сбросить</a>
+        </div>
+    </form>
+
+    <div class="cards-grid">
+        {% for dest in destinations %}
+            <div class="tour-card" id="destination-{{ dest.id }}">
+                <div class="card-image">
+                    {% if dest.image %}
+                        <img src="{{ dest.image.url }}" alt="{{ dest.title }}" onerror="this.onerror=null; this.src='{% static 'images/destination-placeholder.svg' %}';">
+                    {% else %}
+                        <img src="{% static 'images/destination-placeholder.svg' %}" alt="{{ dest.title }}">
+                    {% endif %}
+                    {% with first_package=dest.packages.all|first %}
+                        {% if first_package %}
+                            <span class="price-tag">от ${{ first_package.price }}</span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="card-content">
+                    <h2>{{ dest.title }}</h2>
+                    <p class="destination-meta">{{ dest.system.name }} · {{ dest.get_object_type_display }}</p>
+                    <p>{{ dest.description|truncatewords:28 }}</p>
+
+                    {% if dest.tags.all %}
+                        <div class="destination-tags" aria-label="Типы активности">
+                            {% for tag in dest.tags.all %}
+                                <span>{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <button
+                        type="button"
+                        class="book-btn details-toggle"
+                        data-destination-toggle
+                        aria-expanded="false"
+                    >
+                        Подробнее
+                    </button>
+
+                    <div class="review-summary">
+                        <span class="rating-stars">{{ dest.rating_stars }}</span>
+                        {% if dest.avg_rating %}
+                            <strong>{{ dest.avg_rating|floatformat:1 }}/5</strong>
+                        {% else %}
+                            <strong>Нет оценок</strong>
+                        {% endif %}
+                    </div>
+
+                    <div class="package-list">
+                        {% for package in dest.packages.all %}
+                            <div class="package-row">
+                                <strong>{{ package.get_class_type_display }}</strong>
+                                <span>${{ package.price }}</span>
+                                <small>{{ package.features }}</small>
+                                {% if dest.flight_schedules.all %}
+                                    <form method="post" action="{% url 'book_ticket' %}" class="package-booking-form" data-book-url="{% url 'book_tour_api' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="package_id" value="{{ package.id }}">
+                                        <div class="seat-badges" aria-label="Свободные места на рейсах">
+                                            {% for schedule in dest.flight_schedules.all %}
+                                                <span class="seat-badge{% if schedule.available_seats == 0 %} is-empty{% endif %}">
+                                                    Осталось мест: {{ schedule.available_seats }}
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                        <label>
+                                            <span>Рейс</span>
+                                            <select name="schedule_id" class="travelx-select" data-custom-select required{% if not dest.has_available_seats %} disabled{% endif %}>
+                                                {% for schedule in dest.flight_schedules.all %}
+                                                    <option value="{{ schedule.id }}" {% if schedule.available_seats == 0 %}disabled{% endif %}>
+                                                        {{ schedule.departure_at|date:"d.m.Y H:i" }} · мест: {{ schedule.available_seats }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </label>
+                                        {% if dest.has_available_seats %}
+                                            <div class="package-actions">
+                                                <button type="submit" class="book-btn">Оформить заказ</button>
+                                                <button type="button" class="btn-buy" data-package-id="{{ package.id }}">Забронировать</button>
+                                            </div>
+                                        {% else %}
+                                            <button type="button" class="book-btn is-disabled" disabled>Sold Out</button>
+                                        {% endif %}
+                                    </form>
+                                {% else %}
+                                    <small>Расписание рейсов скоро появится.</small>
+                                {% endif %}
+                            </div>
+                        {% empty %}
+                            <p class="destination-meta">Тарифы скоро появятся.</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="reviews-panel">
+                        <h3>Отзывы</h3>
+                        {% for review in dest.reviews.all %}
+                            <article class="review-card">
+                                <div>
+                                    <strong>{{ review.user.username }}</strong>
+                                    <span>{{ review.rating }}/5</span>
+                                </div>
+                                <p>{{ review.text }}</p>
+                            </article>
+                        {% empty %}
+                            <p class="destination-meta">Пока нет отзывов.</p>
+                        {% endfor %}
+
+                        {% if user.is_authenticated %}
+                            {% if dest.user_can_review %}
+                                <form method="post" action="{% url 'add_review' dest.id %}" class="review-form">
+                                    {% csrf_token %}
+                                    <label>
+                                        <span>Рейтинг</span>
+                                        <select name="rating" class="travelx-select" data-custom-select required>
+                                            <option value="5">5 — отлично</option>
+                                            <option value="4">4 — хорошо</option>
+                                            <option value="3">3 — нормально</option>
+                                            <option value="2">2 — слабо</option>
+                                            <option value="1">1 — плохо</option>
+                                        </select>
+                                    </label>
+                                    <label>
+                                        <span>Отзыв</span>
+                                        <textarea name="text" rows="3" maxlength="1200" required></textarea>
+                                    </label>
+                                    <button type="submit" class="book-btn">Оставить отзыв</button>
+                                </form>
+                            {% else %}
+                                <p class="destination-meta">Оставить отзыв можно после покупки билета на это направление.</p>
+                            {% endif %}
+                        {% else %}
+                            <p class="destination-meta">Войдите в аккаунт, чтобы оставить отзыв после путешествия.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="empty-state">Направления скоро появятся.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="quizModal" class="modal">
+    <div class="modal-content" style="max-width: 640px; max-height: 80vh; overflow-y: auto;">
+        <span class="close-btn" data-close-quiz>&times;</span>
+        <div class="modal-header">
+            <h2>Психологический тест космотуриста</h2>
+            <p style="color: #ccc; font-size: 0.9em;">Чтобы перейти к бронированию, нужно ответить минимум на 5 из 7 вопросов правильно.</p>
+        </div>
+        <form id="quizForm" style="text-align: left; padding: 10px;">
+            {% for question in quiz_questions %}
+                <div class="quiz-q">
+                    <p><b>{{ forloop.counter }}. {{ question.title }}</b></p>
+                    {% for option in question.options %}
+                        <label>
+                            <input type="radio" name="q{{ forloop.parentloop.counter0 }}" value="{{ option.score }}">
+                            {{ option.label }}
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if not forloop.last %}
+                    <hr style="border-color: var(--glass-border);">
+                {% endif %}
+            {% endfor %}
+            <div id="quizError" style="color: #ff2a6d; margin-top: 10px; display: none;">Ответьте на все вопросы теста.</div>
+            <button type="button" class="confirm-btn" style="margin-top: 20px;" id="submitQuizButton">Завершить тест</button>
+        </form>
+    </div>
+</div>
+
+<div id="bookingModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" data-close-booking>&times;</span>
+        <div class="modal-header">
+            <h2>Подтвердите путешествие</h2>
+            <p id="tourNameDisplay">Маршрут выбран</p>
+        </div>
+
+        <form id="bookingForm">
+            <div class="input-group">
+                <i class="fas fa-phone-alt"></i>
+                <input type="tel" id="phoneNumber" placeholder="+7 (777) 000-00-00" required>
+            </div>
+            <button type="submit" class="confirm-btn">Подтвердить бронирование</button>
+        </form>
+
+        <div id="downloadSection" style="display: none; text-align: left; margin-top: 20px;">
+            <h3 style="color: #00ff88; text-align: center; margin-bottom: 20px;">Бронирование подтверждено</h3>
+            <p>Выберите документы для загрузки:</p>
+            <form id="downloadForm">
+                <label class="custom-checkbox">
+                    <input type="checkbox" name="dl_file" value="plan">
+                    <span class="checkmark"></span> План путешествия (PDF)
+                </label>
+                <label class="custom-checkbox">
+                    <input type="checkbox" name="dl_file" value="guide">
+                    <span class="checkmark"></span> Инструкция по безопасности (PDF)
+                </label>
+                <label class="custom-checkbox">
+                    <input type="checkbox" name="dl_file" value="map">
+                    <span class="checkmark"></span> Карта маршрута (JPG)
+                </label>
+            </form>
+            <button type="button" id="downloadFilesButton" class="book-btn" style="margin-top: 20px; width: 100%;">
+                Скачать документы <i class="fas fa-download"></i>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

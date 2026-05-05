@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}AI-бот | Travel X{% endblock %}
+
+{% block content %}
+<section class="chatbot-shell">
+    <div class="chatbot-heading">
+        <p class="eyebrow">Travel X Assistant</p>
+        <h1>Интеллектуальный голосовой чат-бот</h1>
+        <p class="lead">Задавайте вопросы о маршрутах, подготовке, безопасности и личном кабинете.</p>
+    </div>
+
+    <div class="chatbot-panel glass-panel">
+        <div class="chatbot-messages" data-chat-messages>
+            {% for turn in chat_history %}
+                {% if turn.user_question %}
+                    <article class="chat-message user">
+                        <span>Вы</span>
+                        <p>{{ turn.user_question }}</p>
+                    </article>
+                {% endif %}
+                {% if turn.assistant_answer %}
+                    <article class="chat-message assistant">
+                        <span>Travel X AI</span>
+                        <p>{{ turn.assistant_answer }}</p>
+                    </article>
+                {% endif %}
+            {% empty %}
+                <article class="chat-message assistant">
+                    <span>Travel X AI</span>
+                    <p>Здравствуйте. Чем помочь с вашим космическим путешествием?</p>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if not chat_history %}
+            <div class="quick-replies" data-quick-replies>
+                <button type="button" class="quick-reply-button" data-quick-reply="Какой у вас опыт в организации полетов?">🚀 Какой у вас опыт в организации полетов?</button>
+                <button type="button" class="quick-reply-button" data-quick-reply="Что включает в себя ваша страховка?">🛡️ Что включает в себя ваша страховка?</button>
+                <button type="button" class="quick-reply-button" data-quick-reply="Нужна ли специальная подготовка?">👨‍🚀 Нужна ли специальная подготовка?</button>
+            </div>
+        {% endif %}
+
+        <form
+            class="chatbot-form"
+            data-chat-form
+            data-message-url="{% url 'chatbot:chat_message' %}"
+            data-transcribe-url="{% url 'chatbot:transcribe_audio' %}"
+        >
+            {% csrf_token %}
+            <label for="chatbot-message">Сообщение</label>
+            <textarea id="chatbot-message" name="message" rows="3" placeholder="Например: какой маршрут подойдет новичку?"></textarea>
+
+            <div class="chatbot-actions">
+                <button type="button" class="secondary-button" data-voice-button>Записать голос</button>
+                <button type="submit" class="primary-button">Отправить</button>
+            </div>
+            <p class="chatbot-status" data-chat-status aria-live="polite"></p>
+        </form>
+    </div>
+</section>
+{% endblock %}

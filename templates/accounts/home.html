@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Конфиденциальная панель | Travel X{% endblock %}
+
+{% block content %}
+<section class="hero-panel glass-panel">
+    <div class="hero-copy">
+        <p class="eyebrow">Только для admin</p>
+        <h1>Конфиденциальная панель управления Travel X.</h1>
+        <p class="lead">
+            Эта страница доступна только администратору и содержит внутреннюю информацию о пользователях,
+            профилях, загруженных фотографиях и текущем состоянии системы.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'dashboard' %}" class="primary-button">Открыть личный кабинет</a>
+            <a href="{% url 'admin:index' %}" class="secondary-button">Перейти в Django admin</a>
+        </div>
+    </div>
+
+    <aside class="status-card">
+        <h2>Сводка системы</h2>
+        <ul class="status-list">
+            <li>Публичная главная страница перенесена из старой версии проекта</li>
+            <li>Конфиденциальная панель скрыта от обычных пользователей</li>
+            <li>Верхняя навигация показывает имя и аватар текущего пользователя</li>
+            <li>Старые страницы `Главная`, `Направления` и `Успешная регистрация` переведены на Django</li>
+            <li>Фотографии профиля и пути к ним хранятся в БД и раздельных директориях пользователей</li>
+        </ul>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">{{ travellers_count }}</span>
+                <span class="stat-label">Всего пользователей</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">{{ photos_count }}</span>
+                <span class="stat-label">Пользователей с фото</span>
+            </div>
+        </div>
+    </aside>
+</section>
+
+<section class="admin-grid">
+    <article class="glass-panel info-card admin-panel-card">
+        <p class="eyebrow">Недавние регистрации</p>
+        <h3>Последние пользователи</h3>
+        <div class="admin-user-list">
+            {% for recent_user in recent_users %}
+                <div class="admin-user-row">
+                    <div>
+                        <strong>{{ recent_user.username }}</strong>
+                        <p>{{ recent_user.email|default:"Email не указан" }}</p>
+                    </div>
+                    <div class="admin-user-meta">
+                        <span>{{ recent_user.date_joined|date:"d.m.Y H:i" }}</span>
+                        <span>Возраст: {{ recent_user.profile.age }}</span>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="muted">Пока нет данных о пользователях.</p>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="glass-panel info-card admin-panel-card">
+        <p class="eyebrow">Файлы профиля</p>
+        <h3>Недавно обновленные фотографии</h3>
+        <div class="admin-user-list">
+            {% for profile in profiles_with_photo %}
+                <div class="admin-user-row">
+                    <div>
+                        <strong>{{ profile.user.username }}</strong>
+                        <p>{{ profile.profile_image.name }}</p>
+                    </div>
+                    <div class="admin-user-meta">
+                        <span>{{ profile.updated_at|date:"d.m.Y H:i" }}</span>
+                        <span>Возраст: {{ profile.age }}</span>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="muted">Пока никто не загрузил фотографию профиля.</p>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+{% endblock %}

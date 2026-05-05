@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Вход | Travel X{% endblock %}
+
+{% block content %}
+<section class="auth-layout auth-layout-narrow">
+    <div class="glass-panel auth-side">
+        <p class="eyebrow">Авторизация</p>
+        <h1>Войдите в аккаунт Travel X</h1>
+        <p class="lead">
+            После входа откроется личный кабинет с вашим аватаром, email и формой загрузки новой фотографии профиля.
+        </p>
+    </div>
+
+    <div class="glass-panel form-card">
+        <h2>Форма входа</h2>
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="field-errors">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="field-block">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <div class="field-block">
+                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                {{ form.password }}
+                {% for error in form.password.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}
+            </div>
+
+            <button type="submit" class="primary-button wide-button">Войти</button>
+        </form>
+
+        <p class="auth-footer">
+            Нужен новый аккаунт?
+            <a href="{% url 'register' %}">Открыть регистрацию</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% if nav_profile %}
+    <a href="{% url 'dashboard' %}" class="nav-user-pill" aria-label="Профиль пользователя">
+        <img src="{{ nav_profile.avatar_url }}" alt="Аватар {{ nav_profile.username }}" class="nav-avatar">
+        <span class="nav-user-text">
+            <strong>{{ nav_profile.username }}</strong>
+            <small>{% if nav_profile.is_staff %}admin{% else %}пользователь{% endif %}</small>
+        </span>
+    </a>
+{% endif %}

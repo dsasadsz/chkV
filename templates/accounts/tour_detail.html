@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tour.title }} | Travel X{% endblock %}
+
+{% block content %}
+<section class="glass-panel tour-detail-panel">
+    <div class="tour-detail-header">
+        <p class="eyebrow">Космический тур</p>
+        <h1>{{ tour.title }}</h1>
+        <p class="lead">{{ tour.description }}</p>
+    </div>
+
+    <div class="tour-detail-grid">
+        <article class="meta-card">
+            <span>Планета назначения</span>
+            <strong>{{ tour.planet }}</strong>
+        </article>
+        <article class="meta-card">
+            <span>Цена</span>
+            <strong>{{ tour.price }} ₸</strong>
+        </article>
+        <article class="meta-card">
+            <span>Статус</span>
+            <strong>{% if tour.is_active %}Доступен{% else %}Недоступен{% endif %}</strong>
+        </article>
+    </div>
+
+    <div class="tour-detail-actions">
+        <a href="{% url 'destinations' %}" class="primary-button">Смотреть направления</a>
+        <a href="{% url 'home' %}" class="secondary-button">На главную</a>
+    </div>
+</section>
+{% endblock %}

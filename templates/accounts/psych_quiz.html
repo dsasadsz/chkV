@@ -1,0 +1,42 @@
+{% extends "public_base.html" %}
+
+{% block title %}Психо-тест | Travel X{% endblock %}
+
+{% block content %}
+<main class="container quiz-page">
+    <section class="quiz-shell">
+        <p class="destination-meta">Первый старт</p>
+        <h1 class="section-title">Психологический тест космотуриста</h1>
+        <p class="quiz-intro">
+            Ответьте на вопросы перед первой покупкой. Для допуска нужно набрать минимум
+            {{ required_score }} правильных ответов.
+        </p>
+
+        {# Форма проверяется на сервере, поэтому результат нельзя подделать через localStorage. #}
+        <form method="post" class="quiz-form">
+            {% csrf_token %}
+            {% for question in quiz_questions %}
+                <fieldset class="quiz-card">
+                    <legend>{{ forloop.counter }}. {{ question.title }}</legend>
+                    {% for option in question.options %}
+                        <label class="quiz-option">
+                            <input
+                                type="radio"
+                                name="q{{ forloop.parentloop.counter0 }}"
+                                value="{{ option.score }}"
+                                required
+                            >
+                            <span>{{ option.label }}</span>
+                        </label>
+                    {% endfor %}
+                </fieldset>
+            {% endfor %}
+
+            <div class="quiz-actions">
+                <a href="{% url 'destinations' %}" class="book-btn reset-filter-btn">Назад к направлениям</a>
+                <button type="submit" class="book-btn">Завершить тест</button>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock %}

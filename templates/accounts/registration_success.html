@@ -1,0 +1,35 @@
+{% extends "public_base.html" %}
+
+{% block title %}Регистрация успешна | Travel X{% endblock %}
+
+{% block content %}
+<section class="success-shell">
+    <div class="success-card">
+        <h1>Регистрация завершена</h1>
+        <p style="text-align:center; margin-bottom: 20px;">Ваш аккаунт сохранен в базе данных Django, а профиль готов к использованию.</p>
+
+        <div class="success-block">
+            <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Возраст:</strong> {{ profile.age }}</p>
+            <p><strong>Дата регистрации:</strong> {{ user.date_joined|date:"d.m.Y H:i" }}</p>
+        </div>
+
+        <div class="success-block" style="border-left: 4px solid var(--accent);">
+            <p><strong>Фото профиля:</strong>
+                {% if profile.profile_image %}
+                    загружено и сохранено по пути <code>{{ profile.profile_image.name }}</code>
+                {% else %}
+                    пока используется фото по умолчанию
+                {% endif %}
+            </p>
+            <p><strong>Следующий шаг:</strong> можно перейти в кабинет, обновить аватар и затем открыть раздел с направлениями.</p>
+        </div>
+
+        <div class="success-actions">
+            <a href="{% url 'dashboard' %}" class="confirm-btn" style="text-align:center; display:block;">Открыть кабинет</a>
+            <a href="{% url 'destinations' %}" class="book-btn" style="text-align:center; display:block;">Смотреть направления</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

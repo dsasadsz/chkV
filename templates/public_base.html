@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Travel X{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/public_site.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    {% block extra_head %}{% endblock %}
+</head>
+<body data-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-username="{% if user.is_authenticated %}{{ user.username }}{% endif %}" data-login-url="{% url 'login' %}">
+    <div class="progress-container">
+        <div class="progress-bar" id="myBar"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="{% url 'home' %}" class="logo">Travel X</a>
+        <div class="nav-links" style="display: flex; align-items: center;">
+            <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}" style="{% if request.resolver_match.url_name == 'home' %}color: var(--accent);{% endif %}">Главная</a>
+            <a href="{% url 'destinations' %}" class="{% if request.resolver_match.url_name == 'destinations' %}active{% endif %}" style="{% if request.resolver_match.url_name == 'destinations' %}color: var(--accent);{% endif %}">Направления</a>
+            <button id="themeToggle" class="theme-toggle" type="button" aria-label="Переключить тему">☀</button>
+
+            <div id="auth-block" style="display: inline-flex; gap: 12px; margin-left: 20px; align-items: center;">
+                {% if user.is_authenticated %}
+                    {% if user.is_staff %}
+                        <a href="{% url 'staff_home' %}" class="book-btn" style="padding: 8px 16px; width: auto; font-size: 0.85rem;">Конфиденциально</a>
+                    {% endif %}
+                    {% include "includes/nav_user.html" %}
+                    <a href="{% url 'dashboard' %}" class="book-btn" style="padding: 8px 16px; width: auto; font-size: 0.85rem;">Личный кабинет</a>
+                    <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="book-btn" style="padding: 8px 16px; width: auto; font-size: 0.85rem;">Выйти</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="book-btn" style="padding: 8px 16px; width: auto; font-size: 0.85rem;">Войти</a>
+                    <a href="{% url 'register' %}" class="book-btn" style="padding: 8px 16px; width: auto; font-size: 0.85rem;">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <div class="public-messages">
+            {% for message in messages %}
+                <div class="public-message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <a class="ai-chat-fab" href="{% url 'chatbot:chat_page' %}" aria-label="Открыть AI-ассистента">
+        <span class="ai-chat-fab__icon">AI</span>
+        <span class="ai-chat-fab__label">Ассистент</span>
+    </a>
+
+    <script defer src="{% static 'js/public_site.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
